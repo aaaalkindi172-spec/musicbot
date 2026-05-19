@@ -1,8 +1,9 @@
-from pyrogram import Client, filters
+from pyrogram import Client, filters, idle
 from pytgcalls import PyTgCalls
-from pytgcalls.types.input_stream import AudioPiped
+from pytgcalls.types import MediaStream
 import yt_dlp
 import os
+import asyncio
 
 API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
@@ -43,7 +44,7 @@ async def play(_, message):
 
     await call_py.join_group_call(
         message.chat.id,
-        AudioPiped(url)
+        MediaStream(url, audio_parameters=MediaStream.audio.high)
     )
 
     await msg.edit(f"تم تشغيل: {title}")
@@ -53,8 +54,10 @@ async def stop(_, message):
     await call_py.leave_group_call(message.chat.id)
     await message.reply("تم إيقاف التشغيل")
 
-app.start()
-call_py.start()
-print("Music Bot Started")
-import idle
-idle()
+async def main():
+    await app.start()
+    await call_py.start()
+    print("Music Bot Started")
+    await idle()
+
+asyncio.run(main())
